@@ -1,0 +1,10 @@
+version: 2.1
+jobs:
+  runner:
+    docker:
+      - image: fr3akyphantom/droid-builder:latest
+    working_directory: /home/builder/circle/
+    steps:
+      - run:
+          name: Initialize
+          command: whoami
