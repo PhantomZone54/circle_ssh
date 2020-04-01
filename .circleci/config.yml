@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  runner:
+  build:
     docker:
       - image: fr3akyphantom/droid-builder:latest
     working_directory: /home/builder/circle/
