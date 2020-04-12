@@ -7,4 +7,4 @@ jobs:
     steps:
       - run:
           name: Initialize
-          command: whoami
+          command: echo -e "\n\n"
