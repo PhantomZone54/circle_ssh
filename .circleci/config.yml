@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: fr3akyphantom/droid-builder-beta:bionic
+      - image: fr3akyphantom/droid-builder-beta:focal
         auth:
           username: "$DOCKER_USERNAME"
           password: "$DOCKERHUB_TOKEN"
@@ -22,11 +22,21 @@ jobs:
             fi
             git config --global -l
       - run:
-          name: Initialize
+          name: Pre-Initialize
           command: df -hlT
+      - setup_remote_docker:
+          version: 19.03.13
+      - run:
+          name: Post-Initialize
+          command: |
+            echo "$DOCKERHUB_TOKEN" | docker login -u $DOCKER_USERNAME --password-stdin
+            docker pull sickcodes/docker-osx:latest
 workflows:
   version: 2
   workstation:
     jobs:
       - build:
           context: org-global
+          filters:
+            branches:
+              only: dev
