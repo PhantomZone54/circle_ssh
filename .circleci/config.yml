@@ -6,11 +6,7 @@ jobs:
         auth:
           username: "$DOCKER_USERNAME"
           password: "$DOCKERHUB_TOKEN"
-      - image: moby/buildkit:rootless
-        auth:
-          username: "$DOCKER_USERNAME"
-          password: "$DOCKERHUB_TOKEN"
-      - image: docker:dind
+      - image: docker:dind-rootless
         auth:
           username: "$DOCKER_USERNAME"
           password: "$DOCKERHUB_TOKEN"
