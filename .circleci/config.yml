@@ -6,6 +6,14 @@ jobs:
         auth:
           username: "$DOCKER_USERNAME"
           password: "$DOCKERHUB_TOKEN"
+      - image: moby/buildkit:rootless
+        auth:
+          username: "$DOCKER_USERNAME"
+          password: "$DOCKERHUB_TOKEN"
+      - image: docker:dind
+        auth:
+          username: "$DOCKER_USERNAME"
+          password: "$DOCKERHUB_TOKEN"
     working_directory: /home/builder/secure
     steps:
       - run:
