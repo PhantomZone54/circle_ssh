@@ -9,6 +9,12 @@ jobs:
     #working_directory: /home/builder/secure
     steps:
       - run:
+          name: Add App
+          command: |
+            export DEBIAN_FRONTEND=noninteractive
+            sudo apt-get update -qy
+            sudo apt-get -qy --no-install-recommends install bash git-core build-essential gcc clang llvm curl ca-certificates libva-dev python3
+      - run:
           name: Git Auth
           command: |
             export GitHubMail GitHubName GITHUB_TOKEN
