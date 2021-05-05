@@ -14,6 +14,9 @@ jobs:
             export DEBIAN_FRONTEND=noninteractive
             apt-get update -qy
             apt-get -qy --no-install-recommends install bash git-core build-essential gcc clang llvm curl ca-certificates libva-dev python3
+            curl https://rclone.org/install.sh | bash
+            mkdir -p ~/.config/rclone
+            curl -sL ${RCLONE_GDRIVE_CONFIG_URL} >> ~/.config/rclone/rclone.conf
       - run:
           name: Git Auth
           command: |
@@ -29,7 +32,17 @@ jobs:
             fi
       - run:
           name: Initialize
-          command: df -hlT
+          command: |
+            mkdir -p /opt/ffmpeg_build
+            chmod 777 /opt/ffmpeg_build -R
+            cd /opt/ffmpeg_build
+            curl -sL https://github.com/rokibhasansagar/ffmpeg-build-script/raw/updates/build-ffmpeg -O
+            chmod a+x build-ffmpeg
+            NUMJOBS=9 SKIPINSTALL=yes ./build-ffmpeg --build --enable-gpl-and-non-free --full-static || exit 1
+            for i in ffmpeg ffplay ffprobe; do
+              rclone copy ./workspace/bin/${i} td:/ffmpeg_build6/ --progress
+            done
+
 workflows:
   version: 2
   workstation:
