@@ -13,7 +13,7 @@ jobs:
           command: |
             export DEBIAN_FRONTEND=noninteractive
             apt-get update -qy
-            apt-get -qy --no-install-recommends install bash git-core build-essential gcc clang llvm curl ca-certificates libva-dev python3
+            apt-get -qy --no-install-recommends install bash git-core busybox sudo build-essential gcc clang llvm curl ca-certificates p7zip-full libva-dev python3
             curl https://rclone.org/install.sh | bash
             mkdir -p ~/.config/rclone
             curl -sL ${RCLONE_GDRIVE_CONFIG_URL} >> ~/.config/rclone/rclone.conf
