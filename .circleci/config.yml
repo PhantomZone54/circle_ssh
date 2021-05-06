@@ -32,6 +32,7 @@ jobs:
             fi
       - run:
           name: Initialize
+          no_output_timeout: 30m
           command: |
             mkdir -p /opt/ffmpeg_build
             chmod 777 /opt/ffmpeg_build -R
