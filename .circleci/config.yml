@@ -2,21 +2,20 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: nvidia/cuda:11.3.0-devel-ubuntu20.04
+      - image: fr3akyphantom/ttk_base:latest
         auth:
           username: "$DOCKER_USERNAME"
           password: "$DOCKERHUB_TOKEN"
-    #working_directory: /home/builder/secure
+      - image: circleci/postgres:alpine
+        auth:
+          username: "$DOCKER_USERNAME"
+          password: "$DOCKERHUB_TOKEN"
+        environment:
+          POSTGRES_PASSWORD: postgres
+    environment:
+      PORT: 8080
+    #working_directory: /torapp
     steps:
-      - run:
-          name: Add App
-          command: |
-            export DEBIAN_FRONTEND=noninteractive
-            apt-get update -qy
-            apt-get -qy --no-install-recommends install bash git-core busybox sudo lsb-core python3 python-is-python3 make ninja-build build-essential gcc clang llvm curl ca-certificates p7zip-full libva-dev
-            curl https://rclone.org/install.sh | bash
-            mkdir -p ~/.config/rclone
-            curl -sL ${RCLONE_GDRIVE_CONFIG_URL} >> ~/.config/rclone/rclone.conf
       - run:
           name: Git Auth
           command: |
@@ -30,19 +29,46 @@ jobs:
               bash google-git-cookies/setup_cookies.sh
               rm -rf google-git-cookies
             fi
+            id
+            whoami
+            ls -lA /
+            ls -lA ~
+            df -hlT
       - run:
-          name: Initialize
-          no_output_timeout: 30m
+          name: Add App
+          no_output_timeout: 4.2h
           command: |
-            mkdir -p /opt/ffmpeg_build
-            chmod 777 /opt/ffmpeg_build -R
-            cd /opt/ffmpeg_build
-            curl -sL https://github.com/rokibhasansagar/ffmpeg-build-script/raw/updates/build-ffmpeg -O
-            chmod a+x build-ffmpeg
-            NUMJOBS=9 SKIPINSTALL=yes ./build-ffmpeg --build --enable-gpl-and-non-free --full-static || exit 1
-            for i in ffmpeg ffplay ffprobe; do
-              rclone copy ./workspace/bin/${i} td:/ffmpeg_build6/ --progress
+            export DEBIAN_FRONTEND=noninteractive
+            apt-get update -qqy
+            apt-get install -qqy xterm screen file nginx
+            mkdir -p /torapp && chmod -R 777 /torapp
+            git clone https://github.com/yash-dk/TorToolkit-Telegram -b master /torapp
+            cd /torapp && mkdir -p /torapp/{sa,tortk/files}
+            git clone https://${GITHUB_TOKEN}@github.com/rokibhasansagar/RcloneSA4Phantom --depth 1
+            mv RcloneSA4Phantom/accounts/* sa/ && rm -rf RcloneSA4Phantom
+            ls sa/ > sa_list
+            echo -e "\nlaunchpadlib" >> requirements.txt
+            pip3 install --no-cache-dir -r requirements.txt
+            curl -sL "${EXEC_VAR_FILE}" > tortoolkit/consts/ExecVarsSample.py
+            curl -fsSL https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -o ngrok.zip
+            unzip -q ngrok.zip ngrok && rm ngrok.zip
+            chmod +x ngrok && mv ngrok /usr/local/bin/
+            ngrok --version
+            screen -dmS ngproxy ngrok http ${PORT} --log /tmp/ngrok.log --authtoken "${NGTTK_TOKEN}" --region us
+            sleep 5s
+            chmod 777 alive.sh start.sh
+            export ServerAddr=$(grep "url=https" /tmp/ngrok.log | awk -F' url=' '{print $NF}')
+            echo -e "\nServer Address is ${ServerAddr}\n\n"
+            sed -i 's|__SERVER__ADDRESS__|'"$ServerAddr"'|' tortoolkit/consts/ExecVarsSample.py
+            mkdir -p ~/.config/rclone && curl -sL "${RCLONE_CONFIG_URL}" > ~/.config/rclone/rclone.conf
+            _randomSA() {
+            while true; do
+              sed -i 's|__ServiceAcc__|'"$(shuf -n 1 sa_list)"'|' ~/.config/rclone/rclone.conf
+              sleep 30m
             done
+            }
+            _randomSA & disown
+            ./start.sh
 
 workflows:
   version: 2
