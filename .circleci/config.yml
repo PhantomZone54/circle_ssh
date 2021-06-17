@@ -29,14 +29,9 @@ jobs:
               bash google-git-cookies/setup_cookies.sh
               rm -rf google-git-cookies
             fi
-            id
-            whoami
-            ls -lA /
-            ls -lA ~
-            df -hlT
       - run:
           name: Add App
-          no_output_timeout: 4.2h
+          no_output_timeout: 4.5h
           command: |
             export DEBIAN_FRONTEND=noninteractive
             apt-get update -qqy
@@ -60,7 +55,7 @@ jobs:
             export ServerAddr=$(grep "url=https" /tmp/ngrok.log | awk -F' url=' '{print $NF}')
             echo -e "\nServer Address is ${ServerAddr}\n\n"
             sed -i 's|__SERVER__ADDRESS__|'"$ServerAddr"'|' tortoolkit/consts/ExecVarsSample.py
-            mkdir -p ~/.config/rclone && curl -sL "${RCLONE_CONFIG_URL}" > ~/.config/rclone/rclone.conf
+            mkdir -p ~/.config/rclone && curl -sL "${RCLONE_CONFIG_TTK}" > ~/.config/rclone/rclone.conf
             _randomSA() {
             while true; do
               sed -i 's|__ServiceAcc__|'"$(shuf -n 1 sa_list)"'|' ~/.config/rclone/rclone.conf
