@@ -55,6 +55,7 @@ jobs:
             export ServerAddr=$(grep "url=https" /tmp/ngrok.log | awk -F' url=' '{print $NF}')
             echo -e "\nServer Address is ${ServerAddr}\n\n"
             sed -i 's|__SERVER__ADDRESS__|'"$ServerAddr"'|' tortoolkit/consts/ExecVarsSample.py
+            sed -i 's|~/.config/rclone|/root/.config/rclone|' tortoolkit/consts/ExecVarsSample.py
             mkdir -p ~/.config/rclone && curl -sL "${RCLONE_CONFIG_TTK}" > ~/.config/rclone/rclone.conf
             _randomSA() {
             while true; do
