@@ -31,7 +31,7 @@ jobs:
             fi
       - run:
           name: Add App
-          no_output_timeout: 4.6h
+          no_output_timeout: 4.9h
           command: |
             export DEBIAN_FRONTEND=noninteractive
             apt-get update -qqy
@@ -69,7 +69,16 @@ jobs:
 
 workflows:
   version: 2
-  workstation:
+  
+  nightly:
+    triggers:
+      - schedule:
+          cron: "* 2,8,14,20 * * *"
+          filters:
+            branches:
+              only:
+                - 'circleci/ttk'
     jobs:
       - build:
           context: org-global
+
