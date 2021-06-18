@@ -31,7 +31,7 @@ jobs:
             fi
       - run:
           name: Add App
-          no_output_timeout: 4.5h
+          no_output_timeout: 4.6h
           command: |
             export DEBIAN_FRONTEND=noninteractive
             apt-get update -qqy
@@ -64,6 +64,7 @@ jobs:
             done
             }
             _randomSA & disown
+            sleep 2s
             ./start.sh
 
 workflows:
