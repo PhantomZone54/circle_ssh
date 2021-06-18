@@ -44,7 +44,7 @@ jobs:
             ls sa/ > sa_list
             echo -e "\nlaunchpadlib" >> requirements.txt
             pip3 install --no-cache-dir -r requirements.txt
-            curl -sL "${EXEC_VAR_FILE}" > tortoolkit/consts/ExecVarsSample.py
+            curl -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3.raw" "https://raw.githubusercontent.com/rokibhasansagar/random_gists/main/tortk/ExecVarsSample.CircleCI_TLBot.py" > tortoolkit/consts/ExecVarsSample.py
             curl -fsSL https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -o ngrok.zip
             unzip -q ngrok.zip ngrok && rm ngrok.zip
             chmod +x ngrok && mv ngrok /usr/local/bin/
@@ -55,8 +55,8 @@ jobs:
             export ServerAddr=$(grep "url=https" /tmp/ngrok.log | awk -F' url=' '{print $NF}')
             echo -e "\nServer Address is ${ServerAddr}\n\n"
             sed -i 's|__SERVER__ADDRESS__|'"$ServerAddr"'|' tortoolkit/consts/ExecVarsSample.py
-            sed -i 's|~/.config/rclone|/root/.config/rclone|' tortoolkit/consts/ExecVarsSample.py
-            mkdir -p ~/.config/rclone && curl -sL "${RCLONE_CONFIG_TTK}" > ~/.config/rclone/rclone.conf
+            mkdir -p ~/.config/rclone
+            curl -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3.raw" "https://raw.githubusercontent.com/rokibhasansagar/random_gists/main/tortk/rclone.conf" > ~/.config/rclone/rclone.conf
             _randomSA() {
             while true; do
               sed -i 's|__ServiceAcc__|'"$(shuf -n 1 sa_list)"'|' ~/.config/rclone/rclone.conf
