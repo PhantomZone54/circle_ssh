@@ -1,6 +1,4 @@
 version: 2.1
-orbs:
-  trigger-circleci-job-orb: zzish/trigger-circleci-job-orb@5.0.6
 jobs:
   build:
     docker:
@@ -16,6 +14,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
     environment:
       PORT: 8080
+      CIRCLECI_TOKEN: ${CIRCLECI_TOKEN}
     #working_directory: /torapp
     steps:
       - run:
@@ -68,6 +67,11 @@ jobs:
             _randomSA & disown
             sleep 2s
             ./start.sh
+      - run:
+          name: Loop
+          when: always
+          command: |
+            curl -X POST -d '{"branch":"circleci/ttk"}' https://circleci.com/api/v1.1/project/github/PhantomZone54/droid-builder_ssh/build?circle-token=${CIRCLECI_TOKEN}
 
 workflows:
   version: 2
@@ -75,13 +79,3 @@ workflows:
     jobs:
       - build:
           context: org-global
-
-      - trigger-circleci-job-orb/trigger:
-          context: org-global
-          requires:
-            - build
-          branch: 'circleci/ttk'
-          job: build
-          organization: PhantomZone54
-          repository: droid-builder_ssh
-          token: '${CIRCLECI_TOKEN}'
