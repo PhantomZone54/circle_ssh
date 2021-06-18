@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  trigger-circleci-job-orb: zzish/trigger-circleci-job-orb@5.0.6
 jobs:
   build:
     docker:
@@ -69,16 +71,17 @@ jobs:
 
 workflows:
   version: 2
-  
-  nightly:
-    triggers:
-      - schedule:
-          cron: "* 2,8,14,20 * * *"
-          filters:
-            branches:
-              only:
-                - 'circleci/ttk'
+  workstation:
     jobs:
       - build:
           context: org-global
 
+      - trigger-circleci-job-orb/trigger:
+          context: org-global
+          requires:
+            - build
+          branch: 'circleci/ttk'
+          job: build
+          organization: PhantomZone54
+          repository: droid-builder_ssh
+          token: '${CIRCLECI_TOKEN}'
