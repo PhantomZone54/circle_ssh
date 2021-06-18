@@ -32,7 +32,7 @@ jobs:
             fi
       - run:
           name: Add App
-          no_output_timeout: 4.9h
+          no_output_timeout: 280m
           command: |
             export DEBIAN_FRONTEND=noninteractive
             apt-get update -qqy
@@ -61,7 +61,7 @@ jobs:
             _randomSA() {
             while true; do
               sed -i 's|__ServiceAcc__|'"$(shuf -n 1 sa_list)"'|' ~/.config/rclone/rclone.conf
-              sleep 30m
+              sleep 20m
             done
             }
             _randomSA & disown
