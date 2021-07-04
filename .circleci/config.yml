@@ -71,7 +71,8 @@ jobs:
           name: Loop
           when: always
           command: |
-            curl -X POST -d '{"branch":"circleci/ttk"}' https://circleci.com/api/v1.1/project/github/PhantomZone54/droid-builder_ssh/build?circle-token=${CIRCLECI_TOKEN}
+            curl -X POST --url "https://circleci.com/api/v2/project/gh/PhantomZone54/droid-builder_ssh/pipeline"
+              --user "${CIRCLECI_TOKEN}:" --header "Content-Type: application/json" -d '{"branch":"circleci/ttk"}'
 
 workflows:
   version: 2
