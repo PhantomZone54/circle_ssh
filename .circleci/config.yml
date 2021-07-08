@@ -14,8 +14,6 @@ jobs:
           POSTGRES_PASSWORD: postgres
     environment:
       PORT: 8080
-      CIRCLECI_TOKEN: ${CIRCLECI_TOKEN}
-    #working_directory: /torapp
     steps:
       - run:
           name: Git Auth
@@ -32,7 +30,7 @@ jobs:
             fi
       - run:
           name: Add App
-          no_output_timeout: 285m
+          no_output_timeout: 290m
           command: |
             export DEBIAN_FRONTEND=noninteractive
             apt-get update -qqy
