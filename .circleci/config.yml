@@ -30,7 +30,7 @@ jobs:
             fi
       - run:
           name: Add App
-          no_output_timeout: 290m
+          no_output_timeout: 285m
           command: |
             export DEBIAN_FRONTEND=noninteractive
             apt-get update -qqy
@@ -65,11 +65,6 @@ jobs:
             _randomSA & disown
             sleep 2s
             ./start.sh
-      - run:
-          name: Loop
-          when: always
-          command: |
-            curl -X POST --url "https://circleci.com/api/v2/project/gh/PhantomZone54/droid-builder_ssh/pipeline" --user "${CIRCLECI_TOKEN}:" --header "Content-Type: application/json" -d '{"branch":"circleci/ttk"}'
 
 workflows:
   version: 2
