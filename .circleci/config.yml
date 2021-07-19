@@ -12,6 +12,8 @@ jobs:
           password: "$DOCKERHUB_TOKEN"
         environment:
           POSTGRES_PASSWORD: postgres
+    # For Personal Use, 1 vCPU + 2GB RAM is enough
+    resource_class: small
     environment:
       PORT: 8080
     steps:
