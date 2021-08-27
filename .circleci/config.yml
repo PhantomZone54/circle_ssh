@@ -13,7 +13,7 @@ jobs:
         environment:
           POSTGRES_PASSWORD: postgres
     # For Personal Use, 1 vCPU + 2GB RAM is enough
-    resource_class: small
+    # resource_class: small
     environment:
       PORT: 8080
     steps:
@@ -36,7 +36,7 @@ jobs:
           command: |
             export DEBIAN_FRONTEND=noninteractive
             apt-get update -qqy
-            apt-get install -qqy xterm screen file nginx
+            apt-get install -qqy xterm screen file nginx 1>/dev/null
             curl -fsSL https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -o ngrok.zip
             unzip -q ngrok.zip ngrok && rm ngrok.zip
             chmod +x ngrok && mv ngrok /usr/local/bin/
@@ -49,11 +49,16 @@ jobs:
             mv RcloneSA4Phantom/accounts/* sa/ && rm -rf RcloneSA4Phantom
             ls sa/ > sa_list
             echo -e "\nlaunchpadlib" >> requirements.txt
-            pip3 install --no-cache-dir -r requirements.txt
+            pip3 install --no-cache-dir -r requirements.txt 1>/dev/null
             curl -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3.raw" "https://raw.githubusercontent.com/rokibhasansagar/random_gists/main/tortk/ExecVarsSample.CircleCI_TLBot.py" > tortoolkit/consts/ExecVarsSample.py
             chmod 777 alive.sh start.sh
+            sleep 5s
             export ServerAddr=$(grep "url=https" /tmp/ngrok.log | awk -F' url=' '{print $NF}')
-            echo -e "\nServer Address is ${ServerAddr}\n\n"
+            if [[ -z ${ServerAddr} ]]; then
+              echo -e "\n[!] Server Address not found\n" && exit 1
+            else
+              echo -e "\nServer Address is ${ServerAddr}\n\n"
+            fi
             sed -i 's|__SERVER__ADDRESS__|'"$ServerAddr"'|' tortoolkit/consts/ExecVarsSample.py
             mkdir -p ~/.config/rclone
             curl -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3.raw" "https://raw.githubusercontent.com/rokibhasansagar/random_gists/main/tortk/rclone.conf" > ~/.config/rclone/rclone.conf
